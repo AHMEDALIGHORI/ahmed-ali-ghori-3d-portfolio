@@ -57,11 +57,15 @@ export function createWorld(canvas, { onProgress } = {}) {
   const cityGlow = new THREE.PointLight(0xff9a5c, 55, 220, 2);
   cityGlow.position.set(0, -34, 0);
 
+  // washes the portrait standee on the deck
+  const portraitLight = new THREE.PointLight(0xffd0a0, 10, 9, 2);
+  portraitLight.position.set(2.6, 3.2, 10.1);
+
   // follows the pointer across the deck so the world answers the hand
   const cursorLight = new THREE.PointLight(0x9fe6ff, 0, 16, 2);
   cursorLight.position.set(0, 3, 0);
 
-  scene.add(hemi, moon, studioLight, deskLight, panelLight, cityGlow, cursorLight);
+  scene.add(hemi, moon, studioLight, deskLight, panelLight, cityGlow, portraitLight, cursorLight);
 
   // ------------------------------------------------------------ composer
   const composer = new EffectComposer(renderer);

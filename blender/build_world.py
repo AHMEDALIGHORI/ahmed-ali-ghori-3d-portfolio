@@ -291,14 +291,59 @@ def empty(name, loc, rot=(0, 0, 0)):
 # --------------------------------------------------------------------------- #
 # the rooftop
 # --------------------------------------------------------------------------- #
+def add_portrait_frame():
+    """A lit, freestanding portrait of Ahmed on the deck, facing the walk-up."""
+    path = os.path.join(ROOT, "public", "portrait.jpg")
+    if not os.path.exists(path):
+        print("portrait.jpg missing — skipping portrait")
+        return
+
+    img = bpy.data.images.load(path)
+    img.colorspace_settings.name = "sRGB"
+
+    mat = bpy.data.materials.new("PortraitPhoto")
+    mat.use_nodes = True
+    nt = mat.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nt.nodes.new("ShaderNodeBsdfPrincipled")
+    tex = nt.nodes.new("ShaderNodeTexImage")
+    tex.image = img
+    bsdf.inputs["Roughness"].default_value = 0.58
+    bsdf.inputs["Emission Strength"].default_value = 0.35
+    nt.links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+    nt.links.new(tex.outputs["Color"], bsdf.inputs["Emission Color"])
+    nt.links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+
+    cx, cy, cz = 2.6, -9.2, 2.15
+    bpy.ops.mesh.primitive_plane_add(
+        size=1.0, location=(cx, cy - 0.06, cz), rotation=(math.radians(90), 0, 0)
+    )
+    photo = bpy.context.object
+    photo.name = "PortraitPhoto"
+    photo.scale = (1.7, 3.74, 1.0)  # 455:1000 aspect
+    photo.data.materials.append(mat)
+
+    metal = simple_mat("PortraitFrameMetal", (0.045, 0.048, 0.055), 0.4, 0.8)
+    box("PortraitFrame", (1.84, 0.06, 3.88), (cx, cy, cz), metal, bevel=0.015)
+    for dx in (-0.6, 0.6):
+        box(f"PortraitLeg_{dx}", (0.07, 0.07, 0.9), (cx + dx, cy + 0.02, 0.45), metal)
+    box("PortraitBase", (1.5, 0.3, 0.06), (cx, cy + 0.02, 0.04), metal)
+
+    # uplight washing the photo
+    box("PortraitLightStrip", (1.6, 0.08, 0.04), (cx, cy - 0.14, 0.12),
+        emission_mat("PortraitWash", (1.0, 0.78, 0.52), 3.0))
+    print("portrait added at", (cx, cy, cz))
+
+
 def build_rooftop():
     concrete = simple_mat("Concrete", (0.10, 0.105, 0.115), 0.74)
     dark_metal = simple_mat("DarkMetal", (0.028, 0.030, 0.036), 0.42, 0.85)
     trim = simple_mat("Trim", (0.10, 0.11, 0.13), 0.38, 0.7)
     glass = simple_mat("StudioGlass", (0.02, 0.03, 0.05), 0.06, 0.0)
-    warm = emission_mat("WarmLight", (1.0, 0.72, 0.42), 3.0)
+    warm = emission_mat("WarmLight", (1.0, 0.72, 0.42), 2.0)
     cyan = emission_mat("CyanLight", (0.30, 0.82, 1.0), 5.0)
-    screen = emission_mat("ScreenGlow", (0.42, 0.75, 1.0), 1.6)
+    screen = emission_mat("ScreenGlow", (0.42, 0.75, 1.0), 1.0)
     plant_mat = simple_mat("Plant", (0.035, 0.12, 0.06), 0.7)
 
     # deck + parapet
@@ -320,7 +365,7 @@ def build_rooftop():
 
     # studio pavilion, right side — open front so the interior reads from the walk path
     sx, sy = 9.0, 7.0
-    warm_soft = emission_mat("WarmSoft", (1.0, 0.66, 0.38), 1.5)
+    warm_soft = emission_mat("WarmSoft", (1.0, 0.66, 0.38), 1.0)
     box("StudioFloor", (sx, sy, 0.3), (9, 7, 0.15), trim, bevel=0.02)
     box("StudioBack", (sx, 0.25, 3.3), (9, 7 + sy / 2, 1.75), concrete)
     box("StudioLeft", (0.25, sy, 3.3), (9 - sx / 2, 7, 1.75), concrete)
@@ -417,6 +462,9 @@ def build_rooftop():
     ]
     for i, (loc, yaw) in enumerate(panel_specs, start=1):
         build_panel(i, loc, math.radians(90) + yaw)
+
+    # portrait of Ahmed on the studio wall
+    add_portrait_frame()
 
     # camera path + look targets: one keyframe per story point, in walk order
     path = [
