@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Ahmed Ali Ghori — Frontend Developer &amp; Data Analyst</title>
+    <meta
+      name="description"
+      content="Ahmed Ali Ghori builds cinematic web interfaces: WebGL worlds, scroll-driven films and data products. Explore a night rooftop built in Blender."
+    />
+    <meta name="theme-color" content="#05060a" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2305060a'/%3E%3Ccircle cx='16' cy='16' r='5.5' fill='%238fe9ff'/%3E%3C/svg%3E"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ahmed Ali Ghori — 3D portfolio" />
+    <meta
+      property="og:description"
+      content="Scroll through a night rooftop studio built in Blender. WebGL, Three.js, and 30+ live deployments."
+    />
+    <meta property="og:image" content="./og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ahmed Ali Ghori — 3D portfolio" />
+    <meta name="twitter:description" content="A night rooftop studio built in Blender, walked through with scroll." />
+    <meta name="twitter:image" content="./og.jpg" />
+    <meta name="author" content="Ahmed Ali Ghori" />
+
+    <link rel="preload" as="fetch" href="./models/world.glb" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" crossorigin src="./assets/index-CMcU55dB.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Df3iPVqs.css">
+  </head>
+  <body>
+    <canvas id="scene" aria-hidden="true"></canvas>
+    <div id="vignette" aria-hidden="true"></div>
+
+    <header id="nav">
+      <a class="brand" href="#top" data-goto="0" aria-label="Ahmed Ali Ghori, home">AAG<span>.</span></a>
+
+      <div class="nav-tools">
+        <button id="tour-btn" class="tool" type="button" aria-pressed="false" title="Play the guided tour">
+          <span class="tool-icon" aria-hidden="true">▶</span><span class="tool-label">Tour</span>
+        </button>
+        <button id="sound-btn" class="tool" type="button" aria-pressed="false" title="Ambient rooftop sound">
+          <span class="tool-icon" aria-hidden="true">◌</span><span class="tool-label">Sound</span>
+        </button>
+        <button id="light-btn" class="tool" type="button" aria-pressed="false" title="Switch between night and dusk">
+          <span class="tool-icon" aria-hidden="true">☾</span><span class="tool-label">Night</span>
+        </button>
+        <button id="studio-btn" class="tool" type="button" aria-pressed="false" title="Step inside the studio">
+          <span class="tool-icon" aria-hidden="true">▣</span><span class="tool-label">Studio</span>
+        </button>
+      </div>
+
+      <nav aria-label="Primary">
+        <a href="https://github.com/AHMEDALIGHORI" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://www.linkedin.com/in/ahmed-ali-ghori-85a24b338/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="#contact" class="nav-cta" data-goto="0.965">Contact</a>
+      </nav>
+    </header>
+
+    <aside id="rail" aria-hidden="true"></aside>
+
+    <main id="overlay">
+      <section class="chapter hero" data-chapter="hero">
+        <p class="eyebrow">Frontend Developer <span>·</span> Data Analyst</p>
+        <h1>Ahmed<br />Ali Ghori</h1>
+        <p class="lede">
+          I build cinematic interfaces for the web — WebGL worlds, scroll-driven films, and
+          dashboards that make complex data feel obvious.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#work" data-goto="0.355">See the work</a>
+          <a class="btn ghost" href="https://github.com/AHMEDALIGHORI" target="_blank" rel="noopener noreferrer">
+            GitHub ↗
+          </a>
+        </div>
+        <p class="hero-meta">Scroll to walk the roof</p>
+      </section>
+
+      <section class="chapter about" data-chapter="about">
+        <div class="panel copy about-panel">
+          <div class="about-head">
+            <img id="avatar" class="avatar" alt="Ahmed Ali Ghori" width="64" height="64" />
+            <p class="kicker">01 — About</p>
+            <span class="about-place">Hyderabad, Sindh · Pakistan</span>
+          </div>
+          <div class="about-grid">
+            <div class="about-main">
+              <h2>Design that behaves like software.</h2>
+              <p>
+                I'm a frontend-focused engineer and applied-AI builder, currently finishing a BS in
+                Computer Science at Iqra University. My work sits where motion design meets
+                engineering: procedural WebGL, scroll choreography, and interfaces that stay fast on
+                a mid-range phone.
+              </p>
+              <p>
+                Alongside the web I work with data — Python, SQL Server, notebooks, Snowflake — and
+                I've spent the last two years shipping React and Next.js interfaces at Developer Hub.
+                Same instinct either way: make the complex legible.
+              </p>
+              <ul class="chips" id="skills"></ul>
+            </div>
+            <aside class="about-side">
+              <div id="experience" class="experience" hidden></div>
+              <div id="education" class="experience" hidden></div>
+              <div id="certs" class="certs" hidden></div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="chapter studio" data-chapter="studio">
+        <div class="panel copy narrow">
+          <p class="kicker">02 — The studio</p>
+          <h2>Everything you see here was modelled, lit and rendered in Blender.</h2>
+          <p>
+            One rooftop, one night, 154 buildings and about 5,500 faces — exported as glTF and
+            driven in the browser with Three.js. No stock models, no image textures borrowed from
+            anywhere.
+          </p>
+          <dl class="stats" id="stats"></dl>
+          <p class="fineprint" id="stat-source"></p>
+        </div>
+      </section>
+
+      <div id="cards" aria-live="polite"></div>
+
+      <section class="chapter more" data-chapter="more">
+        <div class="panel copy">
+          <p class="kicker">07 — Also shipped</p>
+          <h2>More worlds, stores and films.</h2>
+          <ul class="filters" id="filters" aria-label="Filter projects by stack"></ul>
+          <ul class="project-list" id="project-list"></ul>
+        </div>
+      </section>
+
+      <section class="chapter contact" data-chapter="contact" id="contact">
+        <div class="panel copy narrow center">
+          <p class="kicker">08 — Say hello</p>
+          <h2>Let's build the next one.</h2>
+          <p>
+            I'm open to frontend, WebGL and data roles, and to freelance builds like the ones above.
+            The fastest way to reach me is GitHub or LinkedIn — or send a note below.
+          </p>
+
+          <form id="contact-form" class="contact-form" novalidate>
+            <div class="field-row">
+              <label>
+                <span>Name</span>
+                <input name="name" type="text" autocomplete="name" required placeholder="Your name" />
+              </label>
+              <label>
+                <span>Email</span>
+                <input name="email" type="email" autocomplete="email" required placeholder="you@studio.com" />
+              </label>
+            </div>
+            <label>
+              <span>Message</span>
+              <textarea name="message" rows="3" required placeholder="What are we building?"></textarea>
+            </label>
+            <div class="form-actions">
+              <button class="btn primary" type="submit">Send</button>
+              <a class="btn ghost" href="https://www.linkedin.com/in/ahmed-ali-ghori-85a24b338/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+            </div>
+            <p class="form-note" id="form-note"></p>
+            <p class="contact-direct" id="contact-direct"></p>
+          </form>
+
+          <p class="fineprint">
+            World modelled in Blender · WebGL via Three.js · Built by Ahmed Ali Ghori
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <div id="loader">
+      <div class="loader-inner">
+        <span class="loader-name">Ahmed Ali Ghori</span>
+        <div class="loader-bar"><i id="loader-fill"></i></div>
+        <span class="loader-meta"><span id="loader-pct">0</span>% · entering the roof</span>
+      </div>
+    </div>
+
+    <!-- case study -->
+    <div id="case" hidden>
+      <div class="case-backdrop" data-case-close></div>
+      <article class="case-sheet" role="dialog" aria-modal="true" aria-labelledby="case-title">
+        <header class="case-top">
+          <span class="case-index" id="case-index"></span>
+          <button class="case-close" type="button" data-case-close aria-label="Close case study">Close ✕</button>
+        </header>
+        <div class="case-body">
+          <div class="case-media">
+            <img id="case-image" alt="" />
+            <div class="case-media-fallback" id="case-fallback" aria-hidden="true"></div>
+          </div>
+          <div class="case-copy">
+            <p class="case-year" id="case-year"></p>
+            <h2 id="case-title"></h2>
+            <p class="case-tagline" id="case-tagline"></p>
+            <p class="case-summary" id="case-summary"></p>
+            <p class="case-role" id="case-role"></p>
+            <ul class="case-highlights" id="case-highlights"></ul>
+            <dl class="case-metrics" id="case-metrics"></dl>
+            <ul class="chips" id="case-stack"></ul>
+            <div class="case-links" id="case-links"></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+    <div id="studio-hint">Inside the studio · move the pointer to look · Esc to step out</div>
+
+    <div id="scroll-space" aria-hidden="true"></div>
+  </body>
+</html>
