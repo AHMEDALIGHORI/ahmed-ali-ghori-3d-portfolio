@@ -3,6 +3,8 @@ import {
   profile,
   skills,
   experience,
+  education,
+  certifications,
   contact,
   featured,
   more,
@@ -61,23 +63,45 @@ function populate() {
   });
   avatar.src = profile.avatar;
 
-  // LinkedIn timeline — renders only when there is real content to show
+  // Experience / education timelines — render only real content
+  const timeline = (title, items) => `
+    <h3>${title}</h3>
+    ${items
+      .map(
+        (item) => `
+      <div class="exp-item">
+        ${item.period ? `<span class="exp-period">${item.period}</span>` : '<span class="exp-period"></span>'}
+        <span class="exp-role">${item.role}</span>
+        <span class="exp-org">${item.org}</span>
+        ${item.note ? `<span class="exp-note">${item.note}</span>` : ''}
+      </div>`,
+      )
+      .join('')}`;
+
   const exp = document.getElementById('experience');
   if (experience.length) {
     exp.hidden = false;
-    exp.innerHTML = `
-      <h3>Experience</h3>
-      ${experience
-        .map(
-          (item) => `
-        <div class="exp-item">
-          <span class="exp-period">${item.period}</span>
-          <span class="exp-role">${item.role}</span>
-          <span class="exp-org">${item.org}</span>
-          ${item.note ? `<span class="exp-note">${item.note}</span>` : ''}
-        </div>`,
-        )
-        .join('')}`;
+    exp.innerHTML = timeline('Experience', experience);
+  }
+
+  const edu = document.getElementById('education');
+  if (education.length) {
+    edu.hidden = false;
+    edu.innerHTML = timeline('Education', education);
+  }
+
+  const certs = document.getElementById('certs');
+  if (certifications.length) {
+    certs.hidden = false;
+    certs.innerHTML = `
+      <h3>Certifications</h3>
+      <p>${certifications.join(' · ')}</p>`;
+  }
+
+  // direct email line under the form
+  const direct = document.getElementById('contact-direct');
+  if (direct && profile.email) {
+    direct.innerHTML = `Or email <a href="mailto:${profile.email}">${profile.email}</a> directly.`;
   }
 
   const stats = document.getElementById('stats');
@@ -277,9 +301,17 @@ form.addEventListener('submit', async (event) => {
   }
 
   if (!contact.endpoint) {
-    formNote.dataset.state = 'error';
-    formNote.textContent =
-      'No form endpoint is configured yet. Add one in src/content.js, or reach me on LinkedIn — the button is right there.';
+    if (!contact.email) {
+      formNote.dataset.state = 'error';
+      formNote.textContent = 'No form endpoint is configured yet. Reach me on LinkedIn instead.';
+      return;
+    }
+    // no backend: hand the message to the visitor's mail client
+    const subject = encodeURIComponent(`Portfolio enquiry from ${payload.name}`);
+    const body = encodeURIComponent(`${payload.message}\n\n— ${payload.name} (${payload.email})`);
+    window.location.href = `mailto:${contact.email}?subject=${subject}&body=${body}`;
+    formNote.dataset.state = 'ok';
+    formNote.textContent = 'Opening your mail app with the message ready to send.';
     return;
   }
 

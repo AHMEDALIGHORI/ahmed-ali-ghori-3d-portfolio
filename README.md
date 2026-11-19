@@ -26,7 +26,7 @@ through with the scroll wheel in the browser.
 | Filters | stack chips filter the "more" list and dim non-matching panels |
 | Live stats | GitHub API numbers with a 30-minute cache, baked values as fallback |
 | Avatar | real GitHub profile photo, hidden automatically if unavailable |
-| Experience | LinkedIn timeline component — renders only when `experience` has entries |
+| Experience | Timeline transcribed from `Profile.pdf` — Developer Hub roles, Iqra University CS, certifications |
 | Contact form | posts to a Formspree/Getform endpoint when configured; explains itself otherwise |
 | Share card | `public/og.jpg` rendered in Blender at 1200×630, wired into OG/Twitter tags |
 | Deep links | `?`–free hash routes so every project is shareable |
@@ -118,7 +118,11 @@ errors. The interaction test drives real mouse events over CDP.
   mostly buffers, so PNG was kept. Serve with gzip/brotli at the edge.
 - Panels are HTML cards positioned by projecting their glTF anchors, so text stays
   crisp and selectable while the frame lives in 3D.
-- **LinkedIn blocks automated fetching** (HTTP 999). The site links to the profile
-  and leaves the experience timeline empty until real text is supplied.
+- **LinkedIn blocks automated fetching** (HTTP 999). Experience, education and
+  certifications were transcribed by hand from `Profile.pdf` instead. The CV's
+  phone number is intentionally **not** published; the email is.
+- The CV lists the LinkedIn slug `…-803a0916b`, while the link supplied in chat is
+  `…-85a24b338`. The chat link is the one wired into the site — confirm which is
+  current.
 - Verified in Chromium (headless Edge, GPU) at 1600×900 and 390×844. Safari/iOS
   and low-end Android have not been tested on a device.

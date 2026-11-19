@@ -14,6 +14,8 @@ export const profile = {
   github: 'https://github.com/AHMEDALIGHORI',
   linkedin: 'https://www.linkedin.com/in/ahmed-ali-ghori-85a24b338/',
   portfolio: 'https://ahmed-ali-portfolio-amber.vercel.app',
+  email: 'ahmedalighori9@gmail.com',
+  location: 'Hyderabad, Sindh, Pakistan',
   bio: 'Frontend-focused software engineer and applied AI builder — cinematic web interfaces, WebGL motion, and source-grounded AI.',
   avatar: './avatar.jpg',
   stats: [
@@ -25,18 +27,51 @@ export const profile = {
 };
 
 /**
- * LinkedIn experience timeline. Fill each entry like:
- *   { period: '2024 — now', role: 'Frontend Developer', org: 'Company', note: 'one line' }
- * The About section stays hidden while this array is empty, so the site never
- * ships placeholder claims.
+ * Experience and education, transcribed from Ahmed's Profile.pdf
+ * (LinkedIn export, read 19 Nov 2026). Wording follows the CV.
  */
-export const experience = [];
+export const experience = [
+  {
+    period: 'Feb 2024 — Jan 2026',
+    role: 'Frontend Developer',
+    org: 'Developer Hub Cooperative',
+    note: 'Responsive React / Next.js / TypeScript interfaces, reusable components, REST API integration, cross-screen consistency through structured debugging.',
+  },
+  {
+    period: 'Jan 2023 — Present',
+    role: 'Frontend Web Developer',
+    org: 'Developer Hub · Islamabad',
+    note: 'Interface work across client builds — component systems, responsive layout, debugging.',
+  },
+];
+
+export const education = [
+  {
+    period: 'Mar 2022 — Jul 2026',
+    role: 'BS Computer Science',
+    org: 'Iqra University — Computer Software Engineering',
+    note: 'Data structures and algorithms in Python, web development, data analysis.',
+  },
+  {
+    period: '',
+    role: 'Schooling',
+    org: 'Army Public School (APSACS)',
+    note: '',
+  },
+];
+
+export const certifications = [
+  'AWS Generative AI Applications',
+  'Snowflake Generative AI',
+  'Snowflake Data Engineering',
+  'Microsoft SQL Server Specialization',
+];
 
 /** Contact form: paste a Formspree/Getform endpoint to enable real submissions. */
 export const contact = {
   endpoint: '',
-  email: '',
-  note: 'No endpoint configured yet — the form opens your mail client instead.',
+  email: 'ahmedalighori9@gmail.com',
+  note: 'The form opens your mail client with the message pre-filled.',
 };
 
 export const skills = [
@@ -50,6 +85,9 @@ export const skills = [
   'ScrollTrigger',
   'Lenis',
   'Tailwind CSS',
+  'Responsive design',
+  'REST APIs',
+  'Prompt engineering',
   'Blender',
   'Python',
   'Data analysis',

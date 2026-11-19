@@ -1335,6 +1335,126 @@ body[data-case='open'] {
   }
 }
 
+/* ------------------------------------------------------------ about layout */
+
+.about-panel {
+  max-width: 960px;
+  max-height: 78vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(143, 233, 255, 0.25) transparent;
+}
+
+.about-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.about-panel::-webkit-scrollbar-thumb {
+  background: rgba(143, 233, 255, 0.25);
+  border-radius: 3px;
+}
+
+.about-head {
+  flex-wrap: wrap;
+}
+
+.about-place {
+  margin-left: auto;
+  font-size: 9.5px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr);
+  gap: clamp(16px, 2.4vw, 32px);
+  align-items: start;
+}
+
+.about-main h2 {
+  font-size: clamp(1.7rem, 2.5vw, 2.5rem);
+  margin-bottom: 12px;
+}
+
+.about-side .experience {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.about-side .experience + .experience {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.about-side .exp-item {
+  grid-template-columns: 86px minmax(0, 1fr);
+}
+
+.certs {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.certs h3 {
+  margin: 0 0 8px;
+  font-family: var(--sans);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.certs ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.certs p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.certs li {
+  display: flex;
+  gap: 9px;
+  align-items: baseline;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.certs li::before {
+  content: '→';
+  font-size: 10px;
+  color: var(--amber);
+  flex: none;
+}
+
+.contact-direct {
+  margin-top: 4px;
+  font-size: 12.5px;
+}
+
+.contact-direct a {
+  border-bottom: 1px solid rgba(143, 233, 255, 0.4);
+  padding-bottom: 1px;
+}
+
+.contact-direct a:hover {
+  color: var(--cyan);
+}
+
 @media (max-width: 860px) {
   .nav-tools {
     gap: 4px;
@@ -1359,5 +1479,18 @@ body[data-case='open'] {
 
   .case-sheet {
     max-height: 88vh;
+  }
+
+  .about-panel {
+    max-width: 100%;
+    max-height: 70vh;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-place {
+    display: none;
   }
 }
