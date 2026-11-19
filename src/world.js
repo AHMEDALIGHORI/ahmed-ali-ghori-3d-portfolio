@@ -254,6 +254,21 @@ export function createWorld(canvas, { onProgress } = {}) {
     composer.render();
   }
 
+  // the agent core: a slow bob + counter-rotating rings, authored in Blender
+  const agentCore = nodes.get('AgentCore');
+  const agentRingA = nodes.get('AgentRingA');
+  const agentRingB = nodes.get('AgentRingB');
+  const coreBaseY = agentCore ? agentCore.position.y : 0;
+
+  function animateAgent(t) {
+    if (agentCore) {
+      agentCore.position.y = coreBaseY + Math.sin(t * 1.5) * 0.05;
+      agentCore.rotation.y = t * 0.35;
+    }
+    if (agentRingA) agentRingA.rotation.z = t * 0.8;
+    if (agentRingB) agentRingB.rotation.x = -t * 0.55;
+  }
+
   return {
     scene,
     camera,
@@ -267,6 +282,7 @@ export function createWorld(canvas, { onProgress } = {}) {
     resize,
     bloom,
     setMode,
+    animateAgent,
     getMode: () => mode,
     setCursor,
     tickQuality,

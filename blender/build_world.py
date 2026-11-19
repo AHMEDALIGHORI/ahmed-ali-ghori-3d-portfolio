@@ -336,6 +336,40 @@ def add_portrait_frame():
     print("portrait added at", (cx, cy, cz))
 
 
+def add_agent_core():
+    """A small holographic core hovering over the studio desk — the agent that built this world."""
+    shell = emission_mat("AgentShell", (0.30, 0.78, 1.0), 0.55)
+    ring_mat = emission_mat("AgentRing", (0.55, 0.88, 1.0), 0.7)
+    pad_mat = simple_mat("AgentBase", (0.02, 0.025, 0.03), 0.3, 0.9)
+
+    cx, cy, cz = -7.8, -2.0, 5.6
+
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=0.8, location=(cx, cy, cz))
+    core = bpy.context.object
+    core.name = "AgentCore"
+    bpy.ops.object.shade_smooth()
+    core.data.materials.append(shell)
+
+    bpy.ops.mesh.primitive_torus_add(
+        major_radius=1.35, minor_radius=0.02, location=(cx, cy, cz),
+        rotation=(math.radians(76), 0, math.radians(12)),
+    )
+    ring_a = bpy.context.object
+    ring_a.name = "AgentRingA"
+    ring_a.data.materials.append(ring_mat)
+
+    bpy.ops.mesh.primitive_torus_add(
+        major_radius=1.7, minor_radius=0.018, location=(cx, cy, cz),
+        rotation=(math.radians(16), math.radians(68), 0),
+    )
+    ring_b = bpy.context.object
+    ring_b.name = "AgentRingB"
+    ring_b.data.materials.append(ring_mat)
+
+    box("AgentPadGlow", (0.5, 0.5, 0.02), (cx, cy, 0.012), ring_mat)
+    print("agent core added")
+
+
 def build_rooftop():
     concrete = simple_mat("Concrete", (0.10, 0.105, 0.115), 0.74)
     dark_metal = simple_mat("DarkMetal", (0.028, 0.030, 0.036), 0.42, 0.85)
@@ -420,7 +454,7 @@ def build_rooftop():
                                          location=(12.5, -11.0, 9.1))
     beacon = bpy.context.object
     beacon.name = "AntennaBeacon"
-    beacon.data.materials.append(emission_mat("BeaconRed", (1.0, 0.18, 0.12), 4.0))
+    beacon.data.materials.append(emission_mat("BeaconRed", (1.0, 0.18, 0.12), 1.3))
 
     # cable trays
     for i, y in enumerate((-12.5, -12.1)):
@@ -465,6 +499,8 @@ def build_rooftop():
 
     # portrait of Ahmed on the studio wall
     add_portrait_frame()
+    # the agent that built this world, hovering over the desk
+    add_agent_core()
 
     # camera path + look targets: one keyframe per story point, in walk order
     path = [

@@ -404,6 +404,7 @@ function loop(now) {
     story.placeCards(chapter.id, window.innerWidth, window.innerHeight);
 
     world.tickQuality(now);
+    world.animateAgent(now / 1000);
     world.render();
   }
 
