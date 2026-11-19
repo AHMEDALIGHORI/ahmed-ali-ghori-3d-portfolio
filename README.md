@@ -1,5 +1,8 @@
 # Ahmed Ali Ghori — 3D portfolio
 
+**Live:** https://ahmedalighori.github.io/ahmed-ali-ghori-3d-portfolio/
+**Repo:** https://github.com/AHMEDALIGHORI/ahmed-ali-ghori-3d-portfolio
+
 A night rooftop world, modelled and lit in Blender, exported as glTF, and walked
 through with the scroll wheel in the browser.
 
@@ -88,14 +91,24 @@ projects with case studies, the "more" list, filters and chapter windows.
 
 ## Deploy
 
-**Vercel** — import the repo; `vercel.json` already sets the build command,
-output directory and long-lived cache headers for `/models`, `/work` and `/assets`.
+The site is published on **GitHub Pages** from the `gh-pages` branch:
 
-**GitHub Pages** — push to `main`; `.github/workflows/deploy.yml` builds with pnpm
-and publishes `dist/`.
+```bash
+pnpm build && pnpm deploy     # builds, then force-pushes dist/ to gh-pages
+```
 
-Either way, keep the glb and the `work/` screenshots on the same origin so the
-preload and cache headers apply.
+`scripts/deploy-pages.mjs` copies `dist/` into a temp repo, adds `.nojekyll`, and
+pushes it. Pages then serves it at the project URL — no Actions minutes needed.
+
+**Why not Actions?** This account's Actions are on a billing hold, so
+`.github/workflows/deploy.yml` is now `workflow_dispatch` only. Once billing is
+resolved, restore the `push: branches: [main]` trigger and the workflow will build
+and deploy on every push again. `vercel.json` is also committed if you ever prefer
+Vercel (build command `pnpm build`, output `dist`).
+
+Note: the site previously inherited the account's `bookkeeper-ai.me` custom domain,
+which had no TLS certificate. That domain was detached so the portfolio could be
+served over HTTPS on github.io.
 
 ## Verify
 

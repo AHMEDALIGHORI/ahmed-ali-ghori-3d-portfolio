@@ -8,6 +8,7 @@
     "dev": "vite --host 127.0.0.1 --port 5180",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1 --port 4180",
+    "deploy": "node scripts/deploy-pages.mjs",
     "shoot": "node scripts/shoot.mjs"
   },
   "dependencies": {
