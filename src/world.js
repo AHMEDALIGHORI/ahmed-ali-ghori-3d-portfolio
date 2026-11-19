@@ -45,7 +45,7 @@ export function createWorld(canvas, { onProgress } = {}) {
   const moon = new THREE.DirectionalLight(0xb4cfff, 1.5);
   moon.position.set(60, 90, 40);
 
-  const studioLight = new THREE.PointLight(0xffb070, 55, 26, 2);
+  const studioLight = new THREE.PointLight(0xffb070, 26, 24, 2);
   studioLight.position.set(9, 2.6, -7.4);
 
   const deskLight = new THREE.PointLight(0x7fd4ff, 16, 12, 2);
@@ -149,7 +149,7 @@ export function createWorld(canvas, { onProgress } = {}) {
       exposure: 1.05,
       bloom: isCoarse ? 0.3 : 0.42,
       emissive: 1,
-      studio: 55,
+      studio: 26,
     },
     dusk: {
       hemi: [0x6d7bb5, 0x1b1410, 1.35],
@@ -159,7 +159,7 @@ export function createWorld(canvas, { onProgress } = {}) {
       exposure: 1.1,
       bloom: isCoarse ? 0.2 : 0.28,
       emissive: 0.45,
-      studio: 26,
+      studio: 16,
     },
   };
 

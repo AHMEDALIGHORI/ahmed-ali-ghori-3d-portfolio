@@ -13,6 +13,7 @@ import {
 } from './content.js';
 import { createWorld } from './world.js';
 import { createStory } from './story.js';
+import { createStudio } from './studio.js';
 import { createCaseStudy } from './case.js';
 import { createAmbience } from './audio.js';
 import { fetchStats } from './github.js';
@@ -33,8 +34,42 @@ const state = {
 
 let world = null;
 let story = null;
+let studio = null;
 let caseStudy = null;
+const pointerNdc = { x: 0, y: 0 };
 const ambience = createAmbience();
+
+/* ------------------------------------------------------------- studio mode */
+
+const studioMode = { active: false, angle: 0, target: 0, centre: null };
+const studioBtn = document.getElementById('studio-btn');
+
+function enterStudio() {
+  if (!world || !studio) return;
+  studioMode.active = true;
+  studioMode.angle = 0;
+  stopTour(true);
+  document.body.dataset.studio = 'open';
+  studioBtn.setAttribute('aria-pressed', 'true');
+  toast('Step inside — pointer to look, Esc to leave');
+}
+
+function exitStudio() {
+  if (!studioMode.active) return;
+  studioMode.active = false;
+  delete document.body.dataset.studio;
+  studioBtn.setAttribute('aria-pressed', 'false');
+  toast('Back on the roof');
+}
+
+studioBtn.addEventListener('click', () => {
+  if (studioMode.active) exitStudio();
+  else enterStudio();
+});
+
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && studioMode.active) exitStudio();
+});
 
 /* ------------------------------------------------------------------ toast */
 
@@ -394,14 +429,30 @@ function loop(now) {
     state.current += (state.target - state.current) * damping;
 
     const chapter = chapterAt(state.current);
-    story.update(state.current, dt, chapter.id);
-    applyChapter(chapter);
 
-    if (cardSizesDirty) {
-      story.measure();
-      cardSizesDirty = false;
+    if (studioMode.active) {
+      // slow orbit inside the pavilion, nudged by the pointer
+      studioMode.angle += dt * 0.16;
+      const angle = studioMode.angle + pointerNdc.x * 0.55;
+      const radius = 3.0 + pointerNdc.y * 0.45;
+      world.camera.position.set(
+        9 + Math.sin(angle) * radius,
+        1.72 + pointerNdc.y * 0.3,
+        -7 + Math.cos(angle) * radius,
+      );
+      world.camera.lookAt(9, 1.7, -7);
+    } else {
+      story.update(state.current, dt, chapter.id);
+      applyChapter(chapter);
+
+      if (cardSizesDirty) {
+        story.measure();
+        cardSizesDirty = false;
+      }
+      story.placeCards(chapter.id, window.innerWidth, window.innerHeight);
     }
-    story.placeCards(chapter.id, window.innerWidth, window.innerHeight);
+
+    studio?.update(now / 1000, dt, world.camera);
 
     world.tickQuality(now);
     world.animateAgent(now / 1000);
@@ -418,6 +469,8 @@ window.addEventListener(
   (event) => {
     const x = (event.clientX / window.innerWidth) * 2 - 1;
     const y = -((event.clientY / window.innerHeight) * 2 - 1);
+    pointerNdc.x = x;
+    pointerNdc.y = y;
     story?.setPointer(x, y);
     world?.setCursor(x, y);
   },
@@ -497,6 +550,13 @@ async function boot() {
     story.measure();
     cardSizesDirty = false;
     story.setPointer(0, 0);
+
+    studio = createStudio({
+      scene: world.scene,
+      nodes: world.nodes,
+      featured,
+      more,
+    });
 
     window.__portfolio = {
       jump(progress) {

@@ -228,6 +228,19 @@ async function main() {
       })()`,
       wait: 1600,
     },
+    {
+      name: '14-studio',
+      setup: `(() => {
+        document.getElementById('studio-btn').click();
+        return document.body.dataset.studio || 'none';
+      })()`,
+      wait: 2600,
+    },
+    {
+      name: '15-studio-b',
+      setup: `(() => { return document.body.dataset.studio; })()`,
+      wait: 3200,
+    },
   ];
 
   for (const extra of extras) {

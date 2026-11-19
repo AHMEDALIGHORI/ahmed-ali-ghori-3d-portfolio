@@ -370,6 +370,133 @@ def add_agent_core():
     print("agent core added")
 
 
+def build_studio_details():
+    """The working studio: screens, boards, gear and the small worn details.
+
+    Surfaces that get a live canvas texture in three.js are exported as plain
+    planes with a neutral material and a Std* name; `src/studio.js` paints them.
+    """
+    dark = simple_mat("StdDark", (0.030, 0.034, 0.044), 0.38, 0.85)
+    soft = simple_mat("StdSoft", (0.085, 0.090, 0.100), 0.6, 0.2)
+    paper = simple_mat("StdPaper", (0.66, 0.64, 0.60), 0.92)
+    cork = simple_mat("StdCorkMat", (0.30, 0.20, 0.11), 0.95)
+    foam = simple_mat("StdFoam", (0.055, 0.058, 0.066), 0.98)
+    canvas = simple_mat("StdCanvas", (0.80, 0.80, 0.78), 0.9, 0.0,
+                        emission=(0.75, 0.72, 0.66), strength=0.35)
+    led = emission_mat("StdLED", (0.35, 0.95, 1.0), 2.0)
+
+    BACK = 10.33   # just in front of the back wall (10.375)
+    LEFT = 4.64    # just in front of the left wall (4.625)
+
+    # --- acoustic foam grid, back wall right of the desk -------------------
+    for i in range(8):
+        for j in range(3):
+            box(f"StdFoam_{i}_{j}", (0.40, 0.05, 0.24),
+                (9.0 + i * 0.54, BACK, 0.40 + j * 0.30), foam, bevel=0.01)
+
+    # --- whiteboard above the monitors ------------------------------------
+    box("StdWhiteboardFrame", (2.05, 0.05, 1.12), (6.7, BACK + 0.02, 2.12), dark, bevel=0.01)
+    emitting_plane("StdWhiteboard", (1.94, 1.0), (6.7, BACK - 0.012, 2.12),
+                   (math.radians(-90), 0, 0), canvas)
+
+    # --- certificate frames, back wall far right --------------------------
+    for i, x in enumerate((10.75, 11.5, 12.25, 13.0), start=1):
+        box(f"StdCertFrame_{i}", (0.56, 0.04, 0.42), (x, BACK + 0.02, 2.6), dark, bevel=0.008)
+        emitting_plane(f"StdCert_{i}", (0.48, 0.34), (x, BACK - 0.004, 2.6),
+                       (math.radians(-90), 0, 0), canvas)
+
+    # --- left wall: corkboard, shipped board, pegboard --------------------
+    def left_surface(name, y, z, w, h, mat):
+        box(f"{name}Frame", (w + 0.09, 0.05, h + 0.09), (LEFT + 0.03, y, z), soft, bevel=0.008)
+        return emitting_plane(name, (w, h), (LEFT + 0.001, y, z),
+                              (math.radians(-90), 0, math.radians(90)), mat)
+
+    left_surface("StdCork", 5.9, 1.95, 1.45, 0.95, cork)
+    left_surface("StdPlaque", 7.75, 1.95, 1.45, 0.95, canvas)
+    left_surface("StdPegboard", 9.65, 1.55, 1.15, 0.85, soft)
+
+    # tools on the pegboard: tablet, pen cup, headphones
+    box("StdTablet", (0.03, 0.42, 0.30), (LEFT + 0.045, 9.6, 1.72), dark, bevel=0.01)
+    cylinder("StdPenCup", 0.06, 0.14, (LEFT + 0.10, 9.95, 1.30), soft, 16)
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.11, minor_radius=0.025,
+                                     location=(LEFT + 0.09, 9.25, 1.25),
+                                     rotation=(0, math.radians(90), 0))
+    phones = bpy.context.object
+    phones.name = "StdHeadphones"
+    phones.data.materials.append(dark)
+
+    # --- server rack with blinking LEDs, back-right corner ----------------
+    box("StdRack", (0.56, 0.56, 1.55), (12.85, 9.85, 0.78), dark, bevel=0.02)
+    for i in range(3):
+        box(f"StdLED_{i + 1}", (0.44, 0.02, 0.05), (12.85, 9.55, 1.25 - i * 0.18), led)
+
+    # --- pendant lamp over the desk ---------------------------------------
+    cylinder("StdLampShade", 0.26, 0.20, (9.0, 8.2, 2.72), dark, 24)
+    cylinder("StdLampGlow", 0.22, 0.02, (9.0, 8.2, 2.61), led, 24)
+
+    # --- desk surfaces: live screens, keyboard, cup, books, turntable -----
+    for i, x in enumerate((7.7, 9.0, 10.3), start=1):
+        emitting_plane(f"StdScreen_{i}", (0.9, 0.5), (x, 8.30, 1.42),
+                       (math.radians(-90), 0, 0), canvas)
+
+    box("StdKeyboardBase", (1.5, 0.42, 0.05), (9.0, 8.10, 1.02), soft, bevel=0.01)
+    emitting_plane("StdKeyboard", (1.42, 0.36), (9.0, 8.10, 1.05), (0, 0, 0), canvas)
+
+    cylinder("StdCup", 0.085, 0.12, (10.75, 8.35, 1.06), paper, 20)
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.07, minor_radius=0.012,
+                                    location=(10.86, 8.35, 1.06),
+                                    rotation=(math.radians(90), 0, 0))
+    handle = bpy.context.object
+    handle.name = "StdCupHandle"
+    handle.data.materials.append(paper)
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.055, minor_radius=0.004,
+                                    location=(10.55, 8.62, 1.005),
+                                    rotation=(0, 0, 0))
+    stain = bpy.context.object
+    stain.name = "StdStain"
+    stain.data.materials.append(simple_mat("StdStainMat", (0.16, 0.10, 0.06), 0.7))
+
+    for i in range(5):
+        box(f"StdBook_{i}", (0.06, 0.26, 0.17 + 0.015 * i),
+            (7.15 + i * 0.075, 8.62, 1.02 + (0.17 + 0.015 * i) / 2), paper, bevel=0.004)
+
+    box("StdTurntable", (0.52, 0.42, 0.06), (11.7, 8.55, 1.02), dark, bevel=0.01)
+    cylinder("StdVinyl", 0.17, 0.012, (11.7, 8.55, 1.07), soft, 32)
+    box("StdTonearm", (0.02, 0.24, 0.02), (11.9, 8.62, 1.10), soft, rot=(0, 0, 0.5))
+
+    # --- drawer in the desk ----------------------------------------------
+    box("StdDrawer", (1.2, 0.46, 0.14), (9.0, 7.98, 0.86), soft, bevel=0.01)
+    box("StdDrawerPull", (0.3, 0.03, 0.03), (9.0, 7.76, 0.90), dark)
+
+    # --- 3D printer in the corner ----------------------------------------
+    px, py = 5.3, 4.6
+    box("StdPrinterBase", (0.82, 0.82, 0.06), (px, py, 0.04), dark, bevel=0.01)
+    for dx, dy in ((-0.36, -0.36), (0.36, -0.36), (-0.36, 0.36), (0.36, 0.36)):
+        box(f"StdPrinterPost_{dx}_{dy}", (0.045, 0.045, 1.1), (px + dx, py + dy, 0.58), dark)
+    box("StdPrinterTop", (0.82, 0.82, 0.05), (px, py, 1.15), dark, bevel=0.01)
+    box("StdNozzle", (0.08, 0.08, 0.12), (px, py, 1.02), simple_mat("StdNozzleMat", (0.5, 0.35, 0.12), 0.35, 0.9))
+    box("StdPrintPart", (0.34, 0.34, 0.02), (px, py, 0.085), emission_mat("StdPrintGlow", (0.4, 0.9, 1.0), 1.0))
+    box("StdPrinterBed", (0.5, 0.5, 0.02), (px, py, 0.075), soft)
+
+    # --- chair pivot so the seat can turn --------------------------------
+    pivot = empty("StdChairPivot", (9.0, 9.4, 0.35))
+    for name in ("DeskChair_Base", "DeskChair_Back", "DeskChair_Post"):
+        ob = bpy.data.objects.get(name)
+        if ob:
+            ob.parent = pivot
+            ob.matrix_parent_inverse = pivot.matrix_world.inverted()
+
+    # --- plant group for a gentle sway -----------------------------------
+    leaf_pivot = empty("StdPlantPivot", (5.2, 9.4, 0.6))
+    for i in range(9):
+        ob = bpy.data.objects.get(f"Leaf_{i}")
+        if ob:
+            ob.parent = leaf_pivot
+            ob.matrix_parent_inverse = leaf_pivot.matrix_world.inverted()
+
+    print("studio details built")
+
+
 def build_rooftop():
     concrete = simple_mat("Concrete", (0.10, 0.105, 0.115), 0.74)
     dark_metal = simple_mat("DarkMetal", (0.028, 0.030, 0.036), 0.42, 0.85)
@@ -501,6 +628,8 @@ def build_rooftop():
     add_portrait_frame()
     # the agent that built this world, hovering over the desk
     add_agent_core()
+    # the studio set: screens, boards, gear, small details
+    build_studio_details()
 
     # camera path + look targets: one keyframe per story point, in walk order
     path = [
