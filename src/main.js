@@ -455,7 +455,6 @@ function loop(now) {
     studio?.update(now / 1000, dt, world.camera);
 
     world.tickQuality(now);
-    world.animateAgent(now / 1000);
     world.render();
   }
 
