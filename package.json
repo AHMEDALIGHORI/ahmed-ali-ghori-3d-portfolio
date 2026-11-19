@@ -1,0 +1,19 @@
+{
+  "name": "ahmed-ali-ghori-3d-portfolio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A night rooftop world built in Blender, driven by scroll, for Ahmed Ali Ghori.",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5180",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4180",
+    "shoot": "node scripts/shoot.mjs"
+  },
+  "dependencies": {
+    "three": "*"
+  },
+  "devDependencies": {
+    "vite": "*"
+  }
+}
