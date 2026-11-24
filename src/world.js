@@ -139,7 +139,63 @@ export function createWorld(canvas, { onProgress } = {}) {
 
   const starfield = createStarfield();
   const embers = createEmbers();
-  scene.add(starfield, embers);
+
+  // #6 Skyline Light-Trail Traffic Streams
+  function createTrafficStreams() {
+    const group = new THREE.Group();
+    const count = isCoarse ? 12 : 24;
+    const geo = new THREE.BoxGeometry(3.8, 0.14, 0.14);
+    const matCyan = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false });
+    const matAmber = new THREE.MeshBasicMaterial({ color: 0xffa94d, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false });
+    for (let i = 0; i < count; i++) {
+      const m = new THREE.Mesh(geo, i % 2 === 0 ? matCyan : matAmber);
+      const axis = i % 2 === 0 ? 'x' : 'z';
+      const dir = i % 4 < 2 ? 1 : -1;
+      const lane = (Math.random() > 0.5 ? 1 : -1) * (32 + Math.random() * 58);
+      const alt = 4 + Math.random() * 34;
+      const span = (Math.random() - 0.5) * 180;
+      if (axis === 'x') {
+        m.position.set(span, alt, lane);
+      } else {
+        m.position.set(lane, alt, span);
+        m.rotation.y = Math.PI / 2;
+      }
+      m.userData = { axis, dir, speed: 12 + Math.random() * 18 };
+      group.add(m);
+    }
+    return group;
+  }
+
+  // #9 Volumetric Skyline Searchlights
+  function createSearchlights() {
+    const group = new THREE.Group();
+    const geo = new THREE.ConeGeometry(7.5, 95, 16, 1, true);
+    geo.translate(0, 47.5, 0);
+    const mat = new THREE.MeshBasicMaterial({
+      color: 0x67e8f9,
+      transparent: true,
+      opacity: 0.055,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    const origins = [
+      [-48, -10, -58, 0.0],
+      [54, -12, -52, 2.1],
+      [-55, -8, 46, 4.2],
+    ];
+    for (const [x, y, z, phase] of origins) {
+      const beam = new THREE.Mesh(geo, mat);
+      beam.position.set(x, y, z);
+      beam.userData = { phase };
+      group.add(beam);
+    }
+    return group;
+  }
+
+  const trafficStreams = createTrafficStreams();
+  const searchlights = createSearchlights();
+  scene.add(starfield, embers, trafficStreams, searchlights);
 
   // ------------------------------------------------------------ composer
   const composer = new EffectComposer(renderer);
@@ -279,7 +335,7 @@ export function createWorld(canvas, { onProgress } = {}) {
     return mode;
   }
 
-  function updateAtmosphere(t, dt) {
+  function updateAtmosphere(t, dt, cam) {
     if (prefersReduced || degraded) return;
     starfield.rotation.y = t * 0.004;
     const pos = embers.geometry.attributes.position;
@@ -292,6 +348,86 @@ export function createWorld(canvas, { onProgress } = {}) {
     }
     pos.needsUpdate = true;
     panelLight.intensity = 24 + Math.sin(t * 1.4) * 3.5;
+
+    // #6 Glide skyline traffic trails
+    for (const car of trafficStreams.children) {
+      const { axis, dir, speed } = car.userData;
+      car.position[axis] += dir * speed * dt;
+      if (car.position[axis] > 95) car.position[axis] = -95;
+      if (car.position[axis] < -95) car.position[axis] = 95;
+    }
+
+    // #9 Sweep skyline searchlights
+    for (const beam of searchlights.children) {
+      const p = beam.userData.phase;
+      beam.rotation.z = Math.sin(t * 0.28 + p) * 0.34;
+      beam.rotation.x = Math.cos(t * 0.22 + p) * 0.24;
+    }
+
+    // #1 Rotate Holographic Tech-Stack Totem
+    const totem = nodes.get('Upgrade_TotemGroup');
+    if (totem) {
+      totem.rotation.y = t * 0.45;
+      totem.position.y = 2.55 + Math.sin(t * 1.6) * 0.14;
+    }
+
+    // #4 Sweep Telemetry Satellite Dish
+    const sat = nodes.get('Upgrade_SatDish');
+    if (sat) sat.rotation.y = Math.sin(t * 0.4) * 0.85;
+
+    // #5 Hover Quadcopter Drone above Helipad
+    const padDrone = nodes.get('Upgrade_PadDrone');
+    if (padDrone) {
+      padDrone.position.y = 1.85 + Math.sin(t * 2.2) * 0.22;
+      padDrone.rotation.y = t * 0.6;
+    }
+
+    // #7 Spin HVAC Exhaust Fans
+    for (let i = 0; i < 2; i++) {
+      const fan = nodes.get(`Upgrade_HVACFan_${i}`);
+      if (fan) fan.rotation.y += dt * 7.5;
+    }
+
+    // #8 Companion Guide Drone glides softly near the camera
+    const guide = nodes.get('Upgrade_GuideDrone');
+    if (guide && cam) {
+      const targetX = THREE.MathUtils.clamp(cam.position.x * 0.35 + Math.cos(t * 0.7) * 1.4, -10, 10);
+      const targetY = THREE.MathUtils.clamp(cam.position.y * 0.45 + 1.8 + Math.sin(t * 1.5) * 0.25, 2.2, 6.5);
+      const targetZ = THREE.MathUtils.clamp(cam.position.z * 0.35 + Math.sin(t * 0.7) * 1.4, -10, 10);
+      guide.position.lerp(new THREE.Vector3(targetX, targetY, targetZ), Math.min(1, dt * 2.5));
+      guide.rotation.y = t * 1.2;
+    }
+
+    // #10 Pulse city-wide aviation beacons
+    const pulse = 0.55 + 0.45 * Math.sin(t * 3.2);
+    for (let i = 0; i < 15; i++) {
+      const b = nodes.get(`Upgrade_CityBeacon_${i}`);
+      if (b?.material) b.material.emissiveIntensity = 3.0 + pulse * 6.0;
+    }
+  }
+
+  // #13 Interactive Studio Desk Lamp toggle
+  let deskLampOn = true;
+  function toggleDeskLamp() {
+    deskLampOn = !deskLampOn;
+    deskLight.intensity = deskLampOn ? 16 : 0;
+    const lamp = nodes.get('Upgrade_DeskLamp');
+    if (lamp?.material) lamp.material.emissiveIntensity = deskLampOn ? 3.8 : 0.05;
+    return deskLampOn;
+  }
+
+  function checkInteractiveClick(ndcX, ndcY) {
+    const targets = ['Upgrade_DeskLamp', 'Upgrade_DeskLampArm', 'Upgrade_DeskLampBase']
+      .map((n) => nodes.get(n))
+      .filter(Boolean);
+    if (!targets.length) return null;
+    pointerNdc.set(ndcX, ndcY);
+    raycaster.setFromCamera(pointerNdc, camera);
+    const hits = raycaster.intersectObjects(targets, true);
+    if (hits.length > 0) {
+      return { type: 'deskLamp', on: toggleDeskLamp() };
+    }
+    return null;
   }
 
   // ------------------------------------------------------- adaptive quality
@@ -376,6 +512,8 @@ export function createWorld(canvas, { onProgress } = {}) {
     setMode,
     getMode: () => mode,
     updateAtmosphere,
+    toggleDeskLamp,
+    checkInteractiveClick,
     setCursor,
     tickQuality,
     isDegraded: () => degraded,

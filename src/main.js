@@ -452,6 +452,9 @@ function progressNow() {
   return Math.max(0, Math.min(1, window.scrollY / max));
 }
 
+/* ---------------------------------------------------------- aerial fly-in */
+const flyIn = { active: !window.matchMedia('(prefers-reduced-motion: reduce)').matches, started: 0, duration: 2600 };
+
 function loop(now) {
   const dt = Math.min(0.05, (now - last) / 1000);
   last = now;
@@ -477,6 +480,7 @@ function loop(now) {
     const chapter = chapterAt(state.current);
 
     if (studioMode.active) {
+      flyIn.active = false;
       // slow orbit inside the pavilion, nudged by the pointer
       studioMode.angle += dt * 0.16;
       const angle = studioMode.angle + pointerNdc.x * 0.55;
@@ -491,6 +495,25 @@ function loop(now) {
       story.update(state.current, dt, chapter.id);
       applyChapter(chapter);
 
+      // #19 Aerial Skyline Dive-In Intro (blends smoothly into hero camera)
+      if (flyIn.active && state.current < 0.02) {
+        if (!flyIn.started) flyIn.started = now;
+        const u = Math.min(1, (now - flyIn.started) / flyIn.duration);
+        const ease = 1 - Math.pow(1 - u, 3);
+        const startX = 48;
+        const startY = 46;
+        const startZ = 78;
+        world.camera.position.set(
+          startX + (world.camera.position.x - startX) * ease,
+          startY + (world.camera.position.y - startY) * ease,
+          startZ + (world.camera.position.z - startZ) * ease,
+        );
+        world.camera.lookAt(0, 6.5, 0);
+        if (u >= 1) flyIn.active = false;
+      } else {
+        flyIn.active = false;
+      }
+
       if (cardSizesDirty) {
         story.measure();
         cardSizesDirty = false;
@@ -499,7 +522,7 @@ function loop(now) {
     }
 
     studio?.update(now / 1000, dt, world.camera);
-    world.updateAtmosphere(now / 1000, dt);
+    world.updateAtmosphere(now / 1000, dt, world.camera);
 
     const bar = document.querySelector('#progress-bar i');
     if (bar) bar.style.transform = `scaleX(${state.current.toFixed(4)})`;
@@ -510,6 +533,16 @@ function loop(now) {
 
   requestAnimationFrame(loop);
 }
+
+canvas.addEventListener('click', (event) => {
+  if (!world || !studioMode.active) return;
+  const x = (event.clientX / window.innerWidth) * 2 - 1;
+  const y = -((event.clientY / window.innerHeight) * 2 - 1);
+  const hit = world.checkInteractiveClick(x, y);
+  if (hit?.type === 'deskLamp') {
+    toast(hit.on ? 'Studio desk lamp on' : 'Studio desk lamp off');
+  }
+});
 
 /* ----------------------------------------------------------------- input */
 

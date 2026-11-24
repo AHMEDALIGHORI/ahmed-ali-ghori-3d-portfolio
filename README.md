@@ -25,7 +25,12 @@ through with the scroll wheel in the browser.
 | Project panels | HTML cards projected onto 3D frames; hover highlights the frame, click opens the case study |
 | Case studies | Full-screen sheet with live-site screenshot, metrics, highlights, stack, deep link `#/work/<id>` |
 | Guided tour | ▶ button flies the camera through every chapter (~52 s), stops the moment you scroll |
-| Night / dusk | ☾ button relights the whole scene (sky, fog, exposure, emissive strength) |
+| Night / dusk / cyber | ☾ button cycles **Night → Dusk → Cyber** lighting (sky, fog, magenta/cyan rim, bloom) |
+| Living city | Starfield dome, drifting embers, skyline air-traffic streams, sweeping searchlights & 15 tower beacons |
+| Rooftop landmarks | Glowing deck portal ring, orbiting holographic tech-stack totem, neon pergola, helipad drone, rotating sat dish & glass railings |
+| Interactive studio | Multi-monitor dev desk, clickable desk lamp, 3D project relic shelf, pulsing AI compute rack & cert plaques |
+| Aerial fly-in | Smooth 2.6 s aerial dive from high above the city onto the rooftop deck after load |
+| Keyboard shortcuts | `1`–`6` jump chapters · `T` tour · `L` lighting · `M` sound · `S` studio · `Esc` exit |
 | Ambient sound | ◌ synthesises a rooftop hum with Web Audio — no audio file, no licence |
 | Cursor light | a point light follows the pointer across the deck |
 | Filters | stack chips filter the "more" list and dim non-matching panels |
@@ -37,6 +42,19 @@ through with the scroll wheel in the browser.
 | Deep links | `?`–free hash routes so every project is shareable |
 | Fallbacks | no WebGL → readable long-form page; no `backdrop-filter` → opaque panels; low fps → bloom off, DPR 1 |
 | Quality | reduced-motion respected, keyboard focus states, ARIA on switches and dialogs |
+
+## Blender Cycles Render Gallery
+
+<table>
+  <tr>
+    <td width="50%"><img src="public/renders/aerial-skyline.jpg" width="100%" alt="Aerial Skyline View" /><br /><sub>Aerial skyline — pergola, helipad, comms spire &amp; 154 lit towers</sub></td>
+    <td width="50%"><img src="public/renders/deck-portal.jpg" width="100%" alt="Deck Portal & Holographic Totem" /><br /><sub>Central deck portal ring &amp; orbiting holographic tech-stack totem</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="public/renders/studio-interior.jpg" width="100%" alt="Glass Studio Interior" /><br /><sub>Inside the glass studio — multi-monitor desk, relic shelf, AI rack &amp; cert plaques</sub></td>
+    <td width="50%"><img src="public/og.jpg" width="100%" alt="Hero Rooftop Framing" /><br /><sub>Hero rooftop framing — wet deck puddles, glass railings &amp; project pedestals</sub></td>
+  </tr>
+</table>
 
 ## Run it
 
