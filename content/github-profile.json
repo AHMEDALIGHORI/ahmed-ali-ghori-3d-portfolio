@@ -1,12 +1,12 @@
 ﻿{
-    "login":  "AHMEDALIGHORI",
-    "name":  "Ahmedalighori",
-    "bio":  "\u0027Ahmed Ali Ghori – Frontend Developer \u0026 Data Analyst.Crafting responsive web interfaces and transforming data into actionable insights.",
-    "avatar":  "https://avatars.githubusercontent.com/u/173507084?v=4",
-    "repos":  117,
-    "created":  "2024-06-21T20:53:13Z",
-    "blog":  "",
-    "email":  null,
-    "location":  null,
-    "hireable":  true
+  "login": "AHMEDALIGHORI",
+  "name": "Ahmed Ali Ghori",
+  "bio": "Frontend Engineer & Creative 3D Developer · React, Next.js, Three.js, WebGL & Applied AI · Hyderabad, Sindh",
+  "avatar": "https://avatars.githubusercontent.com/u/173507084?v=4",
+  "repos": 119,
+  "created": "2024-06-21T20:53:13Z",
+  "blog": "https://ahmedalighori.github.io/ahmed-ali-ghori-3d-portfolio/",
+  "email": "ahmedalighori9@gmail.com",
+  "location": "Hyderabad, Sindh, Pakistan",
+  "hireable": true
 }

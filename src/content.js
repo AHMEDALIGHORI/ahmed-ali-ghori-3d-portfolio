@@ -2,9 +2,7 @@
  * Single source of truth for the site's content.
  *
  * Profile facts and every project line come from github.com/AHMEDALIGHORI
- * (repository descriptions and the public profile API). Experience entries are
- * intentionally empty until Ahmed supplies his LinkedIn text — the section
- * renders nothing while the array is empty.
+ * (repository descriptions and the public profile API).
  */
 
 export const profile = {
@@ -13,13 +11,13 @@ export const profile = {
   roles: ['Frontend Developer', 'Data Analyst', 'WebGL & Motion'],
   github: 'https://github.com/AHMEDALIGHORI',
   linkedin: 'https://www.linkedin.com/in/ahmed-ali-ghori-85a24b338/',
-  portfolio: 'https://ahmed-ali-portfolio-amber.vercel.app',
+  portfolio: 'https://ahmedalighori.github.io/ahmed-ali-ghori-3d-portfolio/',
   email: 'ahmedalighori9@gmail.com',
   location: 'Hyderabad, Sindh, Pakistan',
   bio: 'Frontend-focused software engineer and applied AI builder — cinematic web interfaces, WebGL motion, and source-grounded AI.',
   avatar: './avatar.jpg',
   stats: [
-    { key: 'repos', value: '117', label: 'public repositories' },
+    { key: 'repos', value: '119', label: 'public repositories' },
     { key: 'live', value: '30+', label: 'live deployments' },
     { key: 'faces', value: '5.5k', label: 'faces in this world' },
     { key: 'assets', value: '0', label: 'stock 3D assets' },
@@ -222,6 +220,13 @@ export const featured = [
 /** Everything else, straight from the repo descriptions. */
 export const more = [
   {
+    title: 'Hyderabad City',
+    note: 'Walkable Vice City × San Andreas–style 3D city of Hyderabad, Sindh built in Blender & Three.js.',
+    tags: ['Three.js', 'Blender'],
+    live: null,
+    code: 'https://github.com/AHMEDALIGHORI/hyderabad-city',
+  },
+  {
     title: 'GHORI-CITY',
     note: 'Interactive 3D portfolio city — six districts, Three.js + Blender.',
     tags: ['Three.js', 'Blender'],
@@ -243,6 +248,34 @@ export const more = [
     code: 'https://github.com/AHMEDALIGHORI/br-buds',
   },
   {
+    title: 'BR-ICE',
+    note: 'Animated ice cream storefront with scroll films and an interactive Three.js cone builder.',
+    tags: ['Three.js', 'GSAP'],
+    live: 'https://br-ice.vercel.app',
+    code: 'https://github.com/AHMEDALIGHORI/BR-ICE',
+  },
+  {
+    title: 'Mr. Biriyaniwala',
+    note: 'Cinematic restaurant site with scroll food storytelling, WhatsApp orders & table desk.',
+    tags: ['GSAP'],
+    live: 'https://mr-biriyaniwala.vercel.app',
+    code: 'https://github.com/AHMEDALIGHORI/mr-biriyaniwala',
+  },
+  {
+    title: 'Wok Wave',
+    note: 'Restaurant site with scroll-driven food animation and a photo-rich menu.',
+    tags: ['TypeScript', 'GSAP'],
+    live: 'https://wok-wave.vercel.app',
+    code: 'https://github.com/AHMEDALIGHORI/wok-wave',
+  },
+  {
+    title: 'Nexus Spatial AI',
+    note: 'Embodied AI assistant with a 3D spatial interface, multilingual voice & local document RAG.',
+    tags: ['Three.js', 'Python'],
+    live: null,
+    code: 'https://github.com/AHMEDALIGHORI/nexus-spatial-ai',
+  },
+  {
     title: 'Zenith X Headphones',
     note: 'Headphone product site with motion-led storytelling.',
     tags: ['TypeScript', 'React'],
@@ -253,7 +286,7 @@ export const more = [
     title: 'Voice2Law',
     note: 'Ask by voice, snap documents, know your rights.',
     tags: ['Python'],
-    live: 'https://locallanguage.vercel.app',
+    live: null,
     code: 'https://github.com/AHMEDALIGHORI/Voice2Law-App',
   },
   {
@@ -262,13 +295,6 @@ export const more = [
     tags: ['TypeScript'],
     live: 'https://rozgar-sync.vercel.app',
     code: 'https://github.com/AHMEDALIGHORI/RozgarSync',
-  },
-  {
-    title: 'Wok Wave',
-    note: 'Restaurant site with scroll-driven food animation and a photo-rich menu.',
-    tags: ['TypeScript', 'GSAP'],
-    live: 'https://wok-wave.vercel.app',
-    code: 'https://github.com/AHMEDALIGHORI/wok-wave',
   },
   {
     title: 'Coke Studio Tribute',

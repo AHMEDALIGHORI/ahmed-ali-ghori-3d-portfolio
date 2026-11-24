@@ -1,4 +1,6 @@
-# Ahmed Ali Ghori — 3D portfolio
+# Ahmed Ali Ghori — 3D Portfolio
+
+![Ahmed Ali Ghori — Night Rooftop 3D Portfolio](public/og.jpg)
 
 **Live:** https://ahmedalighori.github.io/ahmed-ali-ghori-3d-portfolio/
 **Repo:** https://github.com/AHMEDALIGHORI/ahmed-ali-ghori-3d-portfolio
@@ -39,7 +41,8 @@ through with the scroll wheel in the browser.
 ## Run it
 
 ```bash
-cd E:\portfolio-3d
+git clone https://github.com/AHMEDALIGHORI/ahmed-ali-ghori-3d-portfolio.git
+cd ahmed-ali-ghori-3d-portfolio
 pnpm install          # first time only
 pnpm dev              # http://127.0.0.1:5180
 ```
@@ -61,7 +64,7 @@ maintain:
 
 ```bash
 # inside Blender (Scripting tab, or via the Blender MCP tool)
-runpy.run_path(r"E:\portfolio-3d\blender\build_world.py", run_name="__main__")
+runpy.run_path("blender/build_world.py", run_name="__main__")
 
 # social card, headless
 blender -b blender/world.blend --python blender/render_og.py -- public/og.jpg
