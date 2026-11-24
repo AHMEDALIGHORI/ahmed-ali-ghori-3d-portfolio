@@ -42,6 +42,7 @@
   <body>
     <canvas id="scene" aria-hidden="true"></canvas>
     <div id="vignette" aria-hidden="true"></div>
+    <div id="progress-bar" aria-hidden="true"><i></i></div>
 
     <header id="nav">
       <a class="brand" href="#top" data-goto="0" aria-label="Ahmed Ali Ghori, home">AAG<span>.</span></a>
@@ -53,7 +54,7 @@
         <button id="sound-btn" class="tool" type="button" aria-pressed="false" title="Ambient rooftop sound">
           <span class="tool-icon" aria-hidden="true">◌</span><span class="tool-label">Sound</span>
         </button>
-        <button id="light-btn" class="tool" type="button" aria-pressed="false" title="Switch between night and dusk">
+        <button id="light-btn" class="tool" type="button" aria-pressed="false" title="Cycle lighting: Night, Dusk, Cyber (L)">
           <span class="tool-icon" aria-hidden="true">☾</span><span class="tool-label">Night</span>
         </button>
         <button id="studio-btn" class="tool" type="button" aria-pressed="false" title="Step inside the studio">
@@ -170,6 +171,7 @@
             </label>
             <div class="form-actions">
               <button class="btn primary" type="submit">Send</button>
+              <button class="btn ghost" id="copy-email-btn" type="button">Copy Email</button>
               <a class="btn ghost" href="https://wa.me/923368933592" target="_blank" rel="noopener noreferrer">WhatsApp ↗</a>
               <a class="btn ghost" href="https://www.linkedin.com/in/ahmed-ali-ghori-85a24b338/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
             </div>

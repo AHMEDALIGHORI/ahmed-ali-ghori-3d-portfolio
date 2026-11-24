@@ -284,14 +284,60 @@ soundBtn.addEventListener('click', async () => {
 /* ----------------------------------------------------------------- lights */
 
 const lightBtn = document.getElementById('light-btn');
-lightBtn.addEventListener('click', () => {
+const LIGHT_CYCLE = [
+  { id: 'night', label: 'Night', icon: '☾', msg: 'Night falls on the roof' },
+  { id: 'dusk', label: 'Dusk', icon: '☀', msg: 'Dusk — the city warms up' },
+  { id: 'cyber', label: 'Cyber', icon: '✦', msg: 'Cyber neon — full rooftop bloom' },
+];
+function cycleLightMode() {
   if (!world) return;
-  const next = world.getMode() === 'night' ? 'dusk' : 'night';
-  world.setMode(next);
-  lightBtn.querySelector('.tool-label').textContent = next === 'night' ? 'Night' : 'Dusk';
-  lightBtn.querySelector('.tool-icon').textContent = next === 'night' ? '☾' : '☀';
-  lightBtn.setAttribute('aria-pressed', String(next === 'dusk'));
-  toast(next === 'night' ? 'Night falls on the roof' : 'Dusk — the city warms up');
+  const idx = LIGHT_CYCLE.findIndex((m) => m.id === world.getMode());
+  const next = LIGHT_CYCLE[(idx + 1) % LIGHT_CYCLE.length];
+  world.setMode(next.id);
+  lightBtn.querySelector('.tool-label').textContent = next.label;
+  lightBtn.querySelector('.tool-icon').textContent = next.icon;
+  lightBtn.setAttribute('aria-pressed', String(next.id !== 'night'));
+  toast(next.msg);
+}
+lightBtn.addEventListener('click', cycleLightMode);
+
+/* ----------------------------------------------------------- copy email */
+
+const copyEmailBtn = document.getElementById('copy-email-btn');
+if (copyEmailBtn && profile.email) {
+  copyEmailBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(profile.email);
+      toast(`Copied ${profile.email}`);
+    } catch {
+      toast(profile.email);
+    }
+  });
+}
+
+/* ----------------------------------------------------- keyboard shortcuts */
+
+window.addEventListener('keydown', (event) => {
+  const tag = event.target?.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || event.metaKey || event.ctrlKey || event.altKey) return;
+  const key = event.key.toLowerCase();
+  if (key >= '1' && key <= '6') {
+    const idx = Number(key) - 1;
+    const item = railLabels[idx];
+    const ch = item && chapters.find((c) => c.id === item.id);
+    if (ch) {
+      if (studioMode.active) exitStudio();
+      scrollToProgress(ch.start + 0.004);
+    }
+  } else if (key === 't') {
+    tourBtn.click();
+  } else if (key === 'l') {
+    cycleLightMode();
+  } else if (key === 'm') {
+    soundBtn.click();
+  } else if (key === 's') {
+    studioBtn.click();
+  }
 });
 
 /* ---------------------------------------------------------------- filters */
@@ -453,6 +499,10 @@ function loop(now) {
     }
 
     studio?.update(now / 1000, dt, world.camera);
+    world.updateAtmosphere(now / 1000, dt);
+
+    const bar = document.querySelector('#progress-bar i');
+    if (bar) bar.style.transform = `scaleX(${state.current.toFixed(4)})`;
 
     world.tickQuality(now);
     world.render();

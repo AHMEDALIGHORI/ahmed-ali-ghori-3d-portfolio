@@ -65,7 +65,81 @@ export function createWorld(canvas, { onProgress } = {}) {
   const cursorLight = new THREE.PointLight(0x9fe6ff, 0, 16, 2);
   cursorLight.position.set(0, 3, 0);
 
-  scene.add(hemi, moon, studioLight, deskLight, panelLight, cityGlow, portraitLight, cursorLight);
+  // subtle magenta accent light (activated in Cyber mode)
+  const cyberAccent = new THREE.PointLight(0xd946ef, 0, 48, 2);
+  cyberAccent.position.set(-14, 9, 12);
+
+  scene.add(hemi, moon, studioLight, deskLight, panelLight, cityGlow, portraitLight, cursorLight, cyberAccent);
+
+  // ------------------------------------------------ atmospheric starfield & embers
+  function createStarfield() {
+    const count = isCoarse ? 320 : 650;
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    const c = new THREE.Color();
+    for (let i = 0; i < count; i++) {
+      const r = 260 + Math.random() * 420;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.random() * Math.PI * 0.42; // upper sky dome
+      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = 28 + r * Math.cos(phi);
+      positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+      c.setHSL(0.55 + (Math.random() - 0.5) * 0.14, 0.45, 0.72 + Math.random() * 0.28);
+      colors[i * 3] = c.r;
+      colors[i * 3 + 1] = c.g;
+      colors[i * 3 + 2] = c.b;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    const mat = new THREE.PointsMaterial({
+      size: 1.65,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.78,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      fog: false,
+    });
+    return new THREE.Points(geo, mat);
+  }
+
+  function createEmbers() {
+    const count = isCoarse ? 90 : 200;
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    const seeds = new Float32Array(count);
+    const c = new THREE.Color();
+    for (let i = 0; i < count; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * 56;
+      positions[i * 3 + 1] = 0.6 + Math.random() * 14;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 56;
+      seeds[i] = Math.random() * Math.PI * 2;
+      // mix of cyan neon dust and warm rooftop gold
+      c.setHex(Math.random() > 0.35 ? 0x67e8f9 : 0xffbe76);
+      colors[i * 3] = c.r;
+      colors[i * 3 + 1] = c.g;
+      colors[i * 3 + 2] = c.b;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    const mat = new THREE.PointsMaterial({
+      size: 0.14,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.65,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    const points = new THREE.Points(geo, mat);
+    points.userData.seeds = seeds;
+    return points;
+  }
+
+  const starfield = createStarfield();
+  const embers = createEmbers();
+  scene.add(starfield, embers);
 
   // ------------------------------------------------------------ composer
   const composer = new EffectComposer(renderer);
@@ -150,6 +224,8 @@ export function createWorld(canvas, { onProgress } = {}) {
       bloom: isCoarse ? 0.3 : 0.42,
       emissive: 1,
       studio: 26,
+      cyber: 0,
+      stars: 0.78,
     },
     dusk: {
       hemi: [0x6d7bb5, 0x1b1410, 1.35],
@@ -160,6 +236,20 @@ export function createWorld(canvas, { onProgress } = {}) {
       bloom: isCoarse ? 0.2 : 0.28,
       emissive: 0.45,
       studio: 16,
+      cyber: 0,
+      stars: 0.32,
+    },
+    cyber: {
+      hemi: [0x1e40af, 0x180929, 1.2],
+      moon: [0x38bdf8, 1.85],
+      fog: [0x09061a, 0.0024],
+      background: 0x060414,
+      exposure: 1.12,
+      bloom: isCoarse ? 0.4 : 0.62,
+      emissive: 1.35,
+      studio: 30,
+      cyber: 34,
+      stars: 0.92,
     },
   };
 
@@ -180,11 +270,28 @@ export function createWorld(canvas, { onProgress } = {}) {
     renderer.toneMappingExposure = preset.exposure;
     bloom.strength = preset.bloom;
     studioLight.intensity = preset.studio;
+    cyberAccent.intensity = preset.cyber;
+    starfield.material.opacity = preset.stars;
 
     for (const mat of emissiveMaterials) {
       mat.emissiveIntensity = (mat.userData.baseEmissive ?? 1) * preset.emissive;
     }
     return mode;
+  }
+
+  function updateAtmosphere(t, dt) {
+    if (prefersReduced || degraded) return;
+    starfield.rotation.y = t * 0.004;
+    const pos = embers.geometry.attributes.position;
+    const seeds = embers.userData.seeds;
+    for (let i = 0; i < pos.count; i++) {
+      let y = pos.getY(i) + dt * (0.28 + (seeds[i] % 0.25));
+      if (y > 15) y = 0.6;
+      const x = pos.getX(i) + Math.sin(t * 0.6 + seeds[i]) * dt * 0.14;
+      pos.setXYZ(i, x, y, pos.getZ(i));
+    }
+    pos.needsUpdate = true;
+    panelLight.intensity = 24 + Math.sin(t * 1.4) * 3.5;
   }
 
   // ------------------------------------------------------- adaptive quality
@@ -268,6 +375,7 @@ export function createWorld(canvas, { onProgress } = {}) {
     bloom,
     setMode,
     getMode: () => mode,
+    updateAtmosphere,
     setCursor,
     tickQuality,
     isDegraded: () => degraded,
