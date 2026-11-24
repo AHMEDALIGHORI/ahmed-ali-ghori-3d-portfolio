@@ -492,6 +492,208 @@ export function createStudio({ scene, nodes, featured, more }) {
     }
   }
 
+  // ------------------------------------------------ Upgraded Studio Interiors
+  // 1. Paint crisp Certification Plaques onto Upgrade_CertPlaque_0..3
+  const certCards = [
+    { name: 'Upgrade_CertPlaque_0', org: 'AWS', title: 'Generative AI', sub: 'Applications', accent: '#f59e0b' },
+    { name: 'Upgrade_CertPlaque_1', org: 'SNOWFLAKE', title: 'Generative AI', sub: 'LLM & Cortex', accent: '#38bdf8' },
+    { name: 'Upgrade_CertPlaque_2', org: 'SNOWFLAKE', title: 'Data Engineering', sub: 'Pipelines & SQL', accent: '#67e8f9' },
+    { name: 'Upgrade_CertPlaque_3', org: 'MICROSOFT', title: 'SQL Server', sub: 'Specialization', accent: '#818cf8' },
+  ];
+  certCards.forEach((c) => {
+    paint(c.name, 384, 256, (ctx, w, h) => {
+      fill(ctx, w, h, '#080e18');
+      ctx.strokeStyle = c.accent;
+      ctx.lineWidth = 6;
+      ctx.strokeRect(10, 10, w - 20, h - 20);
+      text(ctx, c.org, 28, 56, { size: 18, color: c.accent, weight: '600' });
+      text(ctx, c.title, 28, 120, { size: 30, color: '#f8fafc', weight: '600' });
+      text(ctx, c.sub, 28, 160, { size: 20, color: '#94a3b8' });
+      text(ctx, 'VERIFIED · AHMED ALI GHORI', 28, h - 28, { size: 12, color: '#64748b' });
+    });
+  });
+
+  // 2. Live Scrolling GLSL Shader & React Code Monitor (Upgrade_MonitorMain)
+  const codeLines = [
+    'uniform float uTime; uniform vec2 uRes;',
+    'vec3 neonGlow(float d, vec3 col) {',
+    '  return col * (0.018 / max(d, 0.002));',
+    '}',
+    'export function RooftopScene() {',
+    '  const composer = useBloom(0.62);',
+    '  return <Canvas dpr={[1, 2]} />;',
+    '}',
+    '// RAG pipeline · source-grounded AI',
+    'const ctx = await retrieve(query, 6);',
+    'return streamAnswer(ctx, { lang: "ur/en" });',
+    '✓ 60 FPS · WebGL2 · 0 stock assets',
+  ];
+  let monitorTick = 0;
+  const codeMonitor = paint('Upgrade_MonitorMain', 512, 224, (ctx, w, h) => {
+    screenBase(ctx, w, h, 'shader.glsl · RooftopScene.tsx');
+    codeLines.slice(0, 6).forEach((l, i) => {
+      text(ctx, l, 16, 62 + i * 25, { size: 13, color: l.startsWith('//') ? '#64748b' : i % 2 === 0 ? '#38bdf8' : '#e2e8f0' });
+    });
+  }, { live: true });
+
+  // 3. Live Vertical Telemetry & Waveform Monitor (Upgrade_MonitorVert)
+  const vertMonitor = paint('Upgrade_MonitorVert', 256, 448, (ctx, w, h) => {
+    screenBase(ctx, w, h, 'AI CORE');
+    text(ctx, 'ONLINE', 16, 68, { size: 18, color: '#4ade80', weight: '600' });
+  }, { live: true });
+
+  // 4. Floating Holographic Wireframe Globe + Orbital Rings inside Studio
+  const holoGlobe = new THREE_ANY.Group();
+  holoGlobe.position.set(9.0, 1.38, -5.65);
+  const globeWire = new THREE_ANY.Mesh(
+    new THREE_ANY.IcosahedronGeometry(0.36, 2),
+    new THREE_ANY.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.55, blending: THREE_ANY.AdditiveBlending }),
+  );
+  const globeRing1 = new THREE_ANY.Mesh(
+    new THREE_ANY.TorusGeometry(0.48, 0.008, 8, 48),
+    new THREE_ANY.MeshBasicMaterial({ color: 0x67e8f9, transparent: true, opacity: 0.75, blending: THREE_ANY.AdditiveBlending }),
+  );
+  globeRing1.rotation.x = Math.PI * 0.36;
+  const globeRing2 = new THREE_ANY.Mesh(
+    new THREE_ANY.TorusGeometry(0.56, 0.006, 8, 48),
+    new THREE_ANY.MeshBasicMaterial({ color: 0xd946ef, transparent: true, opacity: 0.6, blending: THREE_ANY.AdditiveBlending }),
+  );
+  globeRing2.rotation.x = -Math.PI * 0.28;
+  globeRing2.rotation.y = Math.PI * 0.25;
+  // Pulsing pin for Hyderabad, Sindh
+  const hydPin = new THREE_ANY.Mesh(
+    new THREE_ANY.SphereGeometry(0.032, 10, 8),
+    new THREE_ANY.MeshBasicMaterial({ color: 0xfbbf24 }),
+  );
+  hydPin.position.set(0.24, 0.16, 0.22);
+  holoGlobe.add(globeWire, globeRing1, globeRing2, hydPin);
+  scene.add(holoGlobe);
+
+  // 5. Live 8-Band Glowing Audio Equalizer Bars on the Studio Desk
+  const eqGroup = new THREE_ANY.Group();
+  eqGroup.position.set(9.0, 0.96, -7.85);
+  const eqBars = [];
+  for (let i = 0; i < 8; i += 1) {
+    const barGeo = new THREE_ANY.BoxGeometry(0.045, 0.28, 0.045);
+    barGeo.translate(0, 0.14, 0);
+    const barMat = new THREE_ANY.MeshBasicMaterial({
+      color: i % 2 === 0 ? 0x38bdf8 : 0xd946ef,
+      transparent: true,
+      opacity: 0.85,
+      blending: THREE_ANY.AdditiveBlending,
+    });
+    const bar = new THREE_ANY.Mesh(barGeo, barMat);
+    bar.position.x = -0.35 + i * 0.10;
+    eqGroup.add(bar);
+    eqBars.push(bar);
+  }
+  scene.add(eqGroup);
+
+  // 6. AI Core Server Rack State & Clickable Relic List
+  const aiRackLeds = [];
+  for (let i = 0; i < 6; i += 1) {
+    const led = mesh(`Upgrade_AIRackLED_${i}`);
+    if (led) aiRackLeds.push(led);
+  }
+  const AI_MODES = [
+    { id: 'idle', label: 'AI Core: Idle', color: 0x38bdf8, speed: 2.2 },
+    { id: 'inference', label: 'AI Core: Inference', color: 0x4ade80, speed: 5.5 },
+    { id: 'overclock', label: 'AI Core: Overclock', color: 0xd946ef, speed: 10.5 },
+  ];
+  let aiModeIdx = 0;
+  let audioReactive = false;
+
+  function cycleAiCore() {
+    aiModeIdx = (aiModeIdx + 1) % AI_MODES.length;
+    const m = AI_MODES[aiModeIdx];
+    aiRackLeds.forEach((led) => {
+      if (led.material?.emissive) led.material.emissive.setHex(m.color);
+    });
+    return m;
+  }
+
+  function toggleHoloGlobe() {
+    holoGlobe.visible = !holoGlobe.visible;
+    return holoGlobe.visible;
+  }
+
+  function setAudioActive(on) {
+    audioReactive = Boolean(on);
+  }
+
+  function getInteractiveTargets() {
+    const names = [
+      'Upgrade_DeskLamp', 'Upgrade_DeskLampArm', 'Upgrade_DeskLampBase',
+      'Upgrade_AIRack', 'Upgrade_Relic_Shoe', 'Upgrade_Relic_Tower',
+      'Upgrade_Relic_Orb', 'Upgrade_Relic_GoldBox',
+    ];
+    const objs = names.map((n) => node(n)).filter(Boolean);
+    if (holoGlobe.visible) objs.push(globeWire);
+    return objs;
+  }
+
+  // Paint live scrolling shader + telemetry inside update()
+  function updateUpgradedStudio(t, dt) {
+    // Rotate holographic globe & rings
+    if (holoGlobe.visible) {
+      globeWire.rotation.y = t * 0.35;
+      globeRing1.rotation.z = t * 0.5;
+      globeRing2.rotation.z = -t * 0.38;
+      hydPin.scale.setScalar(0.85 + Math.sin(t * 4.5) * 0.25);
+    }
+
+    // Animate AI Compute Server Rack LEDs
+    const ai = AI_MODES[aiModeIdx];
+    aiRackLeds.forEach((led, i) => {
+      const wave = 0.5 + 0.5 * Math.sin(t * ai.speed - i * 0.75);
+      if (led.material) led.material.emissiveIntensity = 1.2 + wave * 5.2;
+    });
+
+    // Animate 8-band desk audio equalizer
+    eqBars.forEach((bar, i) => {
+      const amp = audioReactive
+        ? 0.25 + 0.75 * Math.abs(Math.sin(t * (4.2 + i * 0.7) + i * 1.1))
+        : 0.12 + 0.14 * Math.abs(Math.sin(t * 1.4 + i * 0.6));
+      bar.scale.y = amp;
+    });
+
+    // Update live scrolling code & telemetry monitors (~6 Hz to stay ultra-light)
+    monitorTick += dt;
+    if (monitorTick > 0.18) {
+      monitorTick = 0;
+      const offset = Math.floor(t * 1.4) % codeLines.length;
+      if (codeMonitor) {
+        const { ctx, width: w, height: h, tex } = codeMonitor;
+        screenBase(ctx, w, h, 'shader.glsl · RooftopScene.tsx');
+        for (let i = 0; i < 6; i += 1) {
+          const line = codeLines[(offset + i) % codeLines.length];
+          text(ctx, line, 16, 62 + i * 25, {
+            size: 13,
+            color: line.startsWith('//') ? '#64748b' : line.startsWith('✓') ? '#4ade80' : i % 2 === 0 ? '#38bdf8' : '#e2e8f0',
+          });
+        }
+        tex.needsUpdate = true;
+      }
+      if (vertMonitor) {
+        const { ctx, width: w, height: h, tex } = vertMonitor;
+        screenBase(ctx, w, h, 'AI CORE · TELEMETRY');
+        text(ctx, ai.id.toUpperCase(), 16, 68, { size: 18, color: aiModeIdx === 2 ? '#e879f9' : aiModeIdx === 1 ? '#4ade80' : '#38bdf8', weight: '600' });
+        text(ctx, `HYDERABAD · GMT+5`, 16, 94, { size: 11, color: '#94a3b8' });
+        // Waveform bars
+        for (let i = 0; i < 12; i += 1) {
+          const bh = 18 + Math.abs(Math.sin(t * 3.2 + i * 0.65)) * 75;
+          ctx.fillStyle = i % 3 === 0 ? '#d946ef' : '#38bdf8';
+          ctx.fillRect(16 + i * 19, 220 - bh, 12, bh);
+        }
+        text(ctx, 'REPOS: 119', 16, 268, { size: 14, color: '#e2e8f0' });
+        text(ctx, 'LIVE DEMOS: 30+', 16, 296, { size: 14, color: '#38bdf8' });
+        text(ctx, 'WEBGL: 60 FPS', 16, 324, { size: 14, color: '#4ade80' });
+        text(ctx, 'CLICK RELICS / LAMP', 16, 390, { size: 12, color: '#fbbf24' });
+        tex.needsUpdate = true;
+      }
+    }
+  }
+
   function refreshScreens() {
     painted.forEach((p) => {
       if (p.name.startsWith('StdScreen') || p.name === 'StdKeyboard') p.tex.needsUpdate = true;
@@ -499,8 +701,15 @@ export function createStudio({ scene, nodes, featured, more }) {
   }
 
   return {
-    update,
+    update: (t, dt, cam) => {
+      update(t, dt, cam);
+      updateUpgradedStudio(t, dt);
+    },
     refreshScreens,
+    cycleAiCore,
+    toggleHoloGlobe,
+    setAudioActive,
+    getInteractiveTargets,
     paintedCount: painted.length,
     has: (name) => Boolean(node(name)),
     clockFace,

@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import './styles.css';
 import {
   profile,
@@ -41,8 +42,40 @@ const ambience = createAmbience();
 
 /* ------------------------------------------------------------- studio mode */
 
-const studioMode = { active: false, angle: 0, target: 0, centre: null };
+const studioMode = { active: false, angle: 0, target: 0, centre: null, preset: 'orbit' };
+const STUDIO_PRESETS = {
+  desk:   { pos: [9.0, 1.55, -5.6], look: [9.0, 1.32, -8.3] },
+  relics: { pos: [8.4, 1.68, -7.2], look: [6.6, 1.62, -7.2] },
+  rack:   { pos: [9.6, 1.45, -5.9], look: [11.2, 1.15, -8.2] },
+};
 const studioBtn = document.getElementById('studio-btn');
+const studioHud = document.getElementById('studio-hud');
+
+if (studioHud) {
+  studioHud.querySelectorAll('[data-studio-cam]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      studioMode.preset = btn.dataset.studioCam;
+      studioHud.querySelectorAll('[data-studio-cam]').forEach((b) =>
+        b.setAttribute('aria-pressed', String(b === btn)),
+      );
+      toast(`Studio camera: ${btn.textContent}`);
+    });
+  });
+  document.getElementById('hud-lamp')?.addEventListener('click', () => {
+    const on = world?.toggleDeskLamp();
+    toast(on ? 'Studio desk lamp on' : 'Studio desk lamp off');
+  });
+  document.getElementById('hud-ai')?.addEventListener('click', () => {
+    const m = studio?.cycleAiCore();
+    if (m) toast(m.label);
+  });
+  document.getElementById('hud-globe')?.addEventListener('click', (e) => {
+    const vis = studio?.toggleHoloGlobe();
+    e.currentTarget.setAttribute('aria-pressed', String(Boolean(vis)));
+    toast(vis ? 'Holographic globe on' : 'Holographic globe hidden');
+  });
+  document.getElementById('hud-exit')?.addEventListener('click', exitStudio);
+}
 
 function enterStudio() {
   if (!world || !studio) return;
@@ -271,13 +304,15 @@ soundBtn.addEventListener('click', async () => {
   const on = soundBtn.getAttribute('aria-pressed') === 'true';
   if (on) {
     ambience.disable();
+    studio?.setAudioActive(false);
     soundBtn.setAttribute('aria-pressed', 'false');
     soundBtn.querySelector('.tool-icon').textContent = '◌';
   } else {
     await ambience.enable();
+    studio?.setAudioActive(true);
     soundBtn.setAttribute('aria-pressed', 'true');
     soundBtn.querySelector('.tool-icon').textContent = '◉';
-    toast('Rooftop ambience on');
+    toast('Rooftop ambience & desk EQ on');
   }
 });
 
@@ -481,16 +516,25 @@ function loop(now) {
 
     if (studioMode.active) {
       flyIn.active = false;
-      // slow orbit inside the pavilion, nudged by the pointer
-      studioMode.angle += dt * 0.16;
-      const angle = studioMode.angle + pointerNdc.x * 0.55;
-      const radius = 3.0 + pointerNdc.y * 0.45;
-      world.camera.position.set(
-        9 + Math.sin(angle) * radius,
-        1.72 + pointerNdc.y * 0.3,
-        -7 + Math.cos(angle) * radius,
-      );
-      world.camera.lookAt(9, 1.7, -7);
+      const preset = STUDIO_PRESETS[studioMode.preset];
+      if (preset) {
+        const px = preset.pos[0] + pointerNdc.x * 0.35;
+        const py = preset.pos[1] + pointerNdc.y * 0.22;
+        const pz = preset.pos[2];
+        world.camera.position.lerp({ x: px, y: py, z: pz }, Math.min(1, dt * 4.5));
+        world.camera.lookAt(preset.look[0], preset.look[1], preset.look[2]);
+      } else {
+        // slow orbit inside the pavilion, nudged by the pointer
+        studioMode.angle += dt * 0.16;
+        const angle = studioMode.angle + pointerNdc.x * 0.55;
+        const radius = 3.0 + pointerNdc.y * 0.45;
+        world.camera.position.set(
+          9 + Math.sin(angle) * radius,
+          1.72 + pointerNdc.y * 0.3,
+          -7 + Math.cos(angle) * radius,
+        );
+        world.camera.lookAt(9, 1.7, -7);
+      }
     } else {
       story.update(state.current, dt, chapter.id);
       applyChapter(chapter);
@@ -534,13 +578,36 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 
+const studioRaycaster = new THREE.Raycaster();
+const studioNdc = new THREE.Vector2();
+
 canvas.addEventListener('click', (event) => {
   if (!world || !studioMode.active) return;
   const x = (event.clientX / window.innerWidth) * 2 - 1;
   const y = -((event.clientY / window.innerHeight) * 2 - 1);
-  const hit = world.checkInteractiveClick(x, y);
-  if (hit?.type === 'deskLamp') {
-    toast(hit.on ? 'Studio desk lamp on' : 'Studio desk lamp off');
+  studioNdc.set(x, y);
+  studioRaycaster.setFromCamera(studioNdc, world.camera);
+  const targets = studio?.getInteractiveTargets?.() || [];
+  const hits = studioRaycaster.intersectObjects(targets, true);
+  if (!hits.length) return;
+  const name = hits[0].object?.name || '';
+  if (name.startsWith('Upgrade_DeskLamp')) {
+    const on = world.toggleDeskLamp();
+    toast(on ? 'Studio desk lamp on' : 'Studio desk lamp off');
+  } else if (name.startsWith('Upgrade_AIRack')) {
+    const m = studio.cycleAiCore();
+    toast(m.label);
+  } else if (name === 'Upgrade_Relic_Shoe') {
+    caseStudy?.open('logoff');
+  } else if (name === 'Upgrade_Relic_Orb') {
+    caseStudy?.open('neon');
+  } else if (name === 'Upgrade_Relic_GoldBox') {
+    caseStudy?.open('mithaas');
+  } else if (name === 'Upgrade_Relic_Tower') {
+    toast('GHORI CITY — 3D portfolio city (6 districts)');
+  } else {
+    const vis = studio.toggleHoloGlobe();
+    toast(vis ? 'Holographic globe on' : 'Holographic globe hidden');
   }
 });
 

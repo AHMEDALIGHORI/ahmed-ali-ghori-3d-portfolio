@@ -223,7 +223,18 @@
     </div>
 
     <div id="toast" role="status" aria-live="polite"></div>
-    <div id="studio-hint">Inside the studio · move the pointer to look · Esc to step out</div>
+    <div id="studio-hint">Inside the studio · click lamp, relics or AI rack · Esc to step out</div>
+    <div id="studio-hud" role="toolbar" aria-label="Studio interactive controls">
+      <button type="button" data-studio-cam="orbit" aria-pressed="true">Orbit</button>
+      <button type="button" data-studio-cam="desk" aria-pressed="false">Desk</button>
+      <button type="button" data-studio-cam="relics" aria-pressed="false">Relics</button>
+      <button type="button" data-studio-cam="rack" aria-pressed="false">AI Rack</button>
+      <span class="hud-sep" aria-hidden="true"></span>
+      <button type="button" id="hud-lamp">Lamp</button>
+      <button type="button" id="hud-ai">AI Core</button>
+      <button type="button" id="hud-globe" aria-pressed="true">Holo Globe</button>
+      <button type="button" id="hud-exit">Exit</button>
+    </div>
 
     <div id="scroll-space" aria-hidden="true"></div>
     <script type="module" src="/src/main.js"></script>
